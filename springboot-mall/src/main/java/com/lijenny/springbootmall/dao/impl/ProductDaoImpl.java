@@ -1,5 +1,6 @@
 package com.lijenny.springbootmall.dao.impl;
 
+import com.lijenny.springbootmall.constant.ProductCategory;
 import com.lijenny.springbootmall.dao.ProductDao;
 import com.lijenny.springbootmall.dto.ProductRequest;
 import com.lijenny.springbootmall.model.Product;
@@ -23,9 +24,19 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public List<Product> getProducts() {
-        String sql="SELECT product_id,product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product";
+    public List<Product> getProducts(ProductCategory category ,String search) {
+        String sql="SELECT product_id,product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product WHERE 1=1";
         Map <String ,Object >map=new HashMap <> ();
+        if(category!=null){
+            sql+=" AND category=:category";
+            map.put("category",category.name());
+        }
+        //使用jdbc的百分比，要寫在map的值裡面，不能寫在sql裡面，這是spring jebc的限制
+        if(search!=null){
+            sql=sql+" And product_name LIKE :search";
+            map.put("search","%"+search+"%");
+        }
+
         List <Product> productList=namedParameterJdbcTemplate.query(sql,map,new ProductRowMapper());
         return productList;
     }
