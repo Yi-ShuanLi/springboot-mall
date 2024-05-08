@@ -25,10 +25,30 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
+    public Integer countProduct(ProductQueryParams productQueryParams) {
+        String sql="SELECT COUNT(*) FROM product WHERE 1=1";
+
+        Map <String ,Object > map=new HashMap <> ();
+        //查詢條件
+        if(productQueryParams.getCategory()!=null){
+            sql+=" AND category =:category";
+            map.put("category",productQueryParams.getCategory().name());
+        }
+        //使用jdbc的百分比，要寫在map的值裡面，不能寫在sql裡面，這是spring jebc的限制
+        if(productQueryParams.getSearch()!=null){
+            sql=sql+" And product_name LIKE :search";
+            map.put("search","%"+productQueryParams.getSearch()+"%");
+        }
+        Integer total= namedParameterJdbcTemplate.queryForObject(sql,map,Integer.class);
+
+        return total;
+    }
+
+    @Override
     public List<Product> getProducts(ProductQueryParams productQueryParams) {
         String sql="SELECT product_id,product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product WHERE 1=1";
-        Map <String ,Object >map=new HashMap <> ();
 
+        Map <String ,Object >map=new HashMap <> ();
         //查詢條件
         if(productQueryParams.getCategory()!=null){
             sql+=" AND category =:category";
