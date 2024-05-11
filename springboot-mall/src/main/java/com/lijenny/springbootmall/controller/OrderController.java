@@ -1,6 +1,7 @@
 package com.lijenny.springbootmall.controller;
 
 import com.lijenny.springbootmall.dto.CreateOrderRequest;
+import com.lijenny.springbootmall.model.Order;
 import com.lijenny.springbootmall.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,9 @@ public class OrderController {
         //因為要接住前端傳來的object=>createOrderRequest裡面有notEmpty註解，所以要加上 @Valid 註解
         Integer orderId = orderService.createOrder(userId,createOrderRequest);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderId);
+        Order order =orderService.getOrderById(orderId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(order);
 
     }
 }
