@@ -6,14 +6,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
 public class User {
+    //@JsonProperty("user_id")
     private Integer userId;
 
-
+    //@JsonProperty("email")
     private String email;
 
+    //@JsonProperty("password")
     @JsonIgnore
     private String password;
+
+    //@JsonProperty("created_date")
     private Date createdDate;
+
+    //@JsonProperty("last_modified_date")
     private Date lastModifiedDate;
 
     public Integer getUserId() {
