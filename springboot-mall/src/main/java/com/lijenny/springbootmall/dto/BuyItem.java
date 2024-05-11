@@ -1,7 +1,7 @@
 package com.lijenny.springbootmall.dto;
 
 import jakarta.validation.constraints.NotNull;
-
+//對應到前端所傳過來的object 裡面的buyItemList的 object
 public class BuyItem {
 
     @NotNull

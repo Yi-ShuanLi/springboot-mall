@@ -1,11 +1,13 @@
 package com.lijenny.springbootmall.model;
 
+import java.util.Date;
+
 public class Order {
     private Integer orderId;
     private Integer userId;
     private Integer totalAmount;
-    private Integer createDate;
-    private String lastModifiedDate;
+    private Date createdDate;
+    private Date lastModifiedDate;
 
     public Integer getOrderId() {
         return orderId;
@@ -31,19 +33,19 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
-    public Integer getCreateDate() {
-        return createDate;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
-    public void setCreateDate(Integer createDate) {
-        this.createDate = createDate;
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
-    public String getLastModifiedDate() {
+    public Date getLastModifiedDate() {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(String lastModifiedDate) {
+    public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 }

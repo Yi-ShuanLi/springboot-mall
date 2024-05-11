@@ -43,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
             orderItemList.add(orderItem);
         }
         //創建訂單
+        //操作多個資料庫要加上@Transactional 萬一中間噴出了 exception 的話，他會去復原已經執行過的資料庫操作的
         Integer orderId=orderDao.createOrder(userId,totalAmount);
         orderDao.createOrderItems(orderId,orderItemList);
         return orderId;
