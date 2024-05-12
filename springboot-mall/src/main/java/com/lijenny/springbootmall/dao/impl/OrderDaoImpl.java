@@ -1,6 +1,7 @@
 package com.lijenny.springbootmall.dao.impl;
 
 import com.lijenny.springbootmall.dao.OrderDao;
+import com.lijenny.springbootmall.dto.OrderQueryParams;
 import com.lijenny.springbootmall.model.Order;
 import com.lijenny.springbootmall.model.OrderItem;
 import com.lijenny.springbootmall.rowmpper.OrderItemRowMapper;
@@ -19,6 +20,49 @@ import java.util.Map;
 
 @Component
 public class OrderDaoImpl  implements OrderDao {
+
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Override
+    public Integer countOrders(OrderQueryParams orderQueryParams) {
+        String sql="SELECT count(*) FROM `order` WHERE 1=1 ";
+
+        Map <String,Object> map=new HashMap <> ();
+
+        //查詢條件
+        //因為拼接sql方法一樣，所以有被抽方法
+        sql=addFilteringSql(sql,map,orderQueryParams);
+
+        Integer total=namedParameterJdbcTemplate.queryForObject(sql,map,Integer.class);
+
+        return total;
+    }
+
+
+
+    @Override
+    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+        String sql="SELECT order_id ,user_id ,total_amount ,created_date ,last_modified_date "+
+                " FROM `order` WHERE 1=1 ";
+        Map <String ,Object > map=new HashMap <> () ;
+
+        //查詢條件
+        sql=addFilteringSql(sql,map,orderQueryParams);
+
+        //排序 (條件直接寫死，由新到舊的訂單)
+        sql+=" ORDER BY created_date DESC ";
+
+        //分頁
+        sql =sql +" LIMIT :limit OFFSET :offset ";
+        map.put("limit",orderQueryParams.getLimit());
+        map.put("offset",orderQueryParams.getOffset());
+
+        List <Order> orderList=namedParameterJdbcTemplate.query(sql,map,new OrderRowMapper());
+
+        return orderList;
+    }
+
     @Override
     public List<OrderItem> getOrderItemsByOrderId(Integer orderId) {
         String sql="SELECT oi.order_item_id ,oi.order_id ,oi.product_id ,oi.quantity, oi.amount, "+
@@ -32,10 +76,6 @@ public class OrderDaoImpl  implements OrderDao {
 
         return orderItemList;
     }
-
-    @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
 
     @Override
     public Order getOrderById(Integer orderId) {
@@ -108,11 +148,11 @@ public class OrderDaoImpl  implements OrderDao {
 
     }
 
-    public NamedParameterJdbcTemplate getNamedParameterJdbcTemplate() {
-        return namedParameterJdbcTemplate;
-    }
-
-    public void setNamedParameterJdbcTemplate(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    private String addFilteringSql(String sql ,Map <String ,Object> map ,OrderQueryParams orderQueryParams){
+        if(orderQueryParams.getUserId() != null){
+            sql=sql +" AND user_id=:userId";
+            map.put("userId",orderQueryParams.getUserId() );
+        }
+        return sql;
     }
 }

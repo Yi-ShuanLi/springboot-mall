@@ -1,7 +1,7 @@
 package com.lijenny.springbootmall.controller;
 
 import com.lijenny.springbootmall.constant.ProductCategory;
-import com.lijenny.springbootmall.dao.ProductQueryParams;
+import com.lijenny.springbootmall.dto.BuyItem;
 import com.lijenny.springbootmall.dto.ProductRequest;
 import com.lijenny.springbootmall.model.Product;
 import com.lijenny.springbootmall.service.ProductService;
@@ -36,7 +36,7 @@ public class ProductController {
             @RequestParam(defaultValue="5") @Max(1000) @Min(0) Integer limit,
             @RequestParam(defaultValue="0") @Min(0) Integer offset){
 
-        ProductQueryParams productQueryParams=new ProductQueryParams();
+        BuyItem.ProductQueryParams productQueryParams=new BuyItem.ProductQueryParams();
         productQueryParams.setCategory(category);
         productQueryParams.setSearch(search);
         productQueryParams.setOrderBy(orderBy);

@@ -1,8 +1,7 @@
 package com.lijenny.springbootmall.dao.impl;
 
-import com.lijenny.springbootmall.constant.ProductCategory;
 import com.lijenny.springbootmall.dao.ProductDao;
-import com.lijenny.springbootmall.dao.ProductQueryParams;
+import com.lijenny.springbootmall.dto.BuyItem;
 import com.lijenny.springbootmall.dto.ProductRequest;
 import com.lijenny.springbootmall.model.Product;
 import com.lijenny.springbootmall.rowmpper.ProductRowMapper;
@@ -25,7 +24,7 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public Integer countProduct(ProductQueryParams productQueryParams) {
+    public Integer countProduct(BuyItem.ProductQueryParams productQueryParams) {
         String sql="SELECT COUNT(*) FROM product WHERE 1=1";
 
         Map <String ,Object > map=new HashMap <> ();
@@ -36,7 +35,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public List<Product> getProducts(ProductQueryParams productQueryParams) {
+    public List<Product> getProducts(BuyItem.ProductQueryParams productQueryParams) {
         String sql="SELECT product_id,product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product WHERE 1=1";
 
         Map <String ,Object >map=new HashMap <> ();
@@ -137,7 +136,7 @@ public class ProductDaoImpl implements ProductDao {
         namedParameterJdbcTemplate.update(sql,map);
     }
 
-    private String addFilteringSql(String sql,Map<String ,Object> map,ProductQueryParams productQueryParams){
+    private String addFilteringSql(String sql, Map<String ,Object> map, BuyItem.ProductQueryParams productQueryParams){
         //查詢條件
         if(productQueryParams.getCategory()!=null){
             sql+=" AND category =:category";

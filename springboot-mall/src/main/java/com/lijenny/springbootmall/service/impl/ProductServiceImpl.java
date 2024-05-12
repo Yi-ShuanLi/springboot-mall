@@ -2,7 +2,7 @@ package com.lijenny.springbootmall.service.impl;
 
 
 import com.lijenny.springbootmall.dao.ProductDao;
-import com.lijenny.springbootmall.dao.ProductQueryParams;
+import com.lijenny.springbootmall.dto.BuyItem;
 import com.lijenny.springbootmall.dto.ProductRequest;
 import com.lijenny.springbootmall.model.Product;
 import com.lijenny.springbootmall.service.ProductService;
@@ -17,12 +17,12 @@ public class ProductServiceImpl implements ProductService {
     private ProductDao productDao;
 
     @Override
-    public Integer countProduct(ProductQueryParams productQueryParams) {
+    public Integer countProduct(BuyItem.ProductQueryParams productQueryParams) {
         return productDao.countProduct(productQueryParams);
     }
 
     @Override
-    public List<Product> getProducts(ProductQueryParams productQueryParams) {
+    public List<Product> getProducts(BuyItem.ProductQueryParams productQueryParams) {
         return productDao.getProducts(productQueryParams);
     }
 
