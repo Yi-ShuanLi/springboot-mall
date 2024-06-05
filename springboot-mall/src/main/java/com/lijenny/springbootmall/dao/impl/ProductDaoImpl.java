@@ -4,6 +4,8 @@ import com.lijenny.springbootmall.dao.ProductDao;
 import com.lijenny.springbootmall.dto.BuyItem;
 import com.lijenny.springbootmall.dto.ProductRequest;
 import com.lijenny.springbootmall.model.Product;
+import com.lijenny.springbootmall.model.ProductItem;
+import com.lijenny.springbootmall.rowmpper.ProductItemRowMapper;
 import com.lijenny.springbootmall.rowmpper.ProductRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -52,6 +54,27 @@ public class ProductDaoImpl implements ProductDao {
         // select * from User where Account = '' or 1=1 --' and Password = ''
         List <Product> productList=namedParameterJdbcTemplate.query(sql,map,new ProductRowMapper());
         return productList;
+    }
+
+    @Override
+    public List<ProductItem> getProductsContainsSalesNumber(BuyItem.ProductQueryParams productQueryParams) {
+        String sql="SELECT  product.product_id, product.product_name,  product.category,  product.image_url,  product.price,  product.stock,  product.description,  product.created_date,  product.last_modified_date , IFNULL(SUM(order_item.quantity),0)  AS salesNumber FROM product LEFT JOIN order_item ON product.product_id=order_item.product_id WHERE 1=1 ";
+
+        Map <String ,Object > map =new HashMap <> ();
+        sql=addFilteringSql(sql,map,productQueryParams);
+
+        sql=sql+" GROUP BY product.product_id, product.product_name, product.category, product.image_url, product.price, product.stock, product.description, product.created_date, product.last_modified_date  HAVING 1=1 ";
+
+
+
+        sql=sql+" ORDER BY "+productQueryParams.getOrderBy()+" "+productQueryParams.getSort();
+        sql=sql+" LIMIT :limit OFFSET :offset";
+        map.put("limit",productQueryParams.getLimit());
+        map.put("offset",productQueryParams.getOffset());
+        List <ProductItem> productItemList=namedParameterJdbcTemplate.query(sql,map,new ProductItemRowMapper());
+
+
+        return productItemList;
     }
 
     @Override

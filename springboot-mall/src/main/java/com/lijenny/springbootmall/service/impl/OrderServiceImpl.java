@@ -6,10 +6,9 @@ import com.lijenny.springbootmall.dao.UserDao;
 import com.lijenny.springbootmall.dto.BuyItem;
 import com.lijenny.springbootmall.dto.CreateOrderRequest;
 import com.lijenny.springbootmall.dto.OrderQueryParams;
-import com.lijenny.springbootmall.model.Order;
-import com.lijenny.springbootmall.model.OrderItem;
-import com.lijenny.springbootmall.model.Product;
-import com.lijenny.springbootmall.model.User;
+import com.lijenny.springbootmall.dto.ProductQueryParams;
+import com.lijenny.springbootmall.model.*;
+import com.lijenny.springbootmall.rowmpper.AllBuyerByProductIdRowMapper;
 import com.lijenny.springbootmall.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +40,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Integer countOrdersByProductId(ProductQueryParams productQueryParams) {
+        return orderDao.countOrdersByProductId(productQueryParams);
+    }
+
+    @Override
+    public Integer getTotalShoppingAmount(OrderQueryParams orderQueryParams) {
+        return orderDao.getTotalShoppingAmount(orderQueryParams);
+    }
+
+    @Override
     public List<Order> getOrders(OrderQueryParams orderQueryParams) {
 
         List <Order> orderList =orderDao.getOrders(orderQueryParams);
@@ -51,6 +60,29 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return orderList;
+    }
+
+    @Override
+    public OrderInfoByProductId getOrdersInfoByProductId(ProductQueryParams productQueryParams) {
+        OrderInfoByProductId orderInfoByProductId = new OrderInfoByProductId();
+        Product product = productDao.getProductById(productQueryParams.getProductId());
+        Integer sumSalesAmountByProductId=orderDao.sumSalesAmountByProductId(productQueryParams);
+        List<AllBuyerByProductId> allBuyerByProductId=orderDao.getAllBuyerByProductId(productQueryParams);
+        orderInfoByProductId.setProductId(product.getProductId());
+        orderInfoByProductId.setProductName(product.getProductName());
+        orderInfoByProductId.setCategory(product.getCategory());
+        orderInfoByProductId.setImageUrl(product.getImageUrl());
+        orderInfoByProductId.setPrice(product.getPrice());
+        orderInfoByProductId.setStock(product.getStock());
+        orderInfoByProductId.setDescription(product.getDescription());
+        orderInfoByProductId.setCreatedDate(product.getCreatedDate());
+        orderInfoByProductId.setLastModifiedDate(product.getLastModifiedDate());
+        orderInfoByProductId.setAllBuyerByProductIdList(allBuyerByProductId);
+        orderInfoByProductId.setTotalSalesAmount(sumSalesAmountByProductId);
+
+
+
+        return orderInfoByProductId;
     }
 
     @Override

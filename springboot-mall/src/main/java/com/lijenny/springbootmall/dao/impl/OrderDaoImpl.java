@@ -2,8 +2,11 @@ package com.lijenny.springbootmall.dao.impl;
 
 import com.lijenny.springbootmall.dao.OrderDao;
 import com.lijenny.springbootmall.dto.OrderQueryParams;
+import com.lijenny.springbootmall.dto.ProductQueryParams;
+import com.lijenny.springbootmall.model.AllBuyerByProductId;
 import com.lijenny.springbootmall.model.Order;
 import com.lijenny.springbootmall.model.OrderItem;
+import com.lijenny.springbootmall.rowmpper.AllBuyerByProductIdRowMapper;
 import com.lijenny.springbootmall.rowmpper.OrderItemRowMapper;
 import com.lijenny.springbootmall.rowmpper.OrderRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,56 @@ public class OrderDaoImpl  implements OrderDao {
         return total;
     }
 
+    @Override
+    public Integer getTotalShoppingAmount(OrderQueryParams orderQueryParams) {
+        String sql="SELECT SUM(order.total_amount) FROM `user` INNER JOIN `order` ON `user`.user_id=`order`.user_id WHERE 1=1 ";
+        Map <String,Object> map=new HashMap <> ();
+
+        //查詢條件
+        //因為拼接sql方法一樣，所以有被抽方法
+        if(orderQueryParams.getUserId() != null){
+            sql=sql +" AND `user`.user_id=:userId";
+            map.put("userId",orderQueryParams.getUserId() );
+        }
+
+        Integer totalShoppingAmount=namedParameterJdbcTemplate.queryForObject(sql,map,Integer.class);
+
+        return totalShoppingAmount;
+
+    }
+
+    @Override
+    public Integer countOrdersByProductId(ProductQueryParams productQueryParams) {
+        String sql="SELECT count(oi.order_item_id)  FROM product AS p INNER JOIN `order_item` AS oi ON p.product_id= oi.product_id WHERE 1=1 ";
+        Map <String ,Object > map=new HashMap <> ();
+
+        if(productQueryParams.getProductId() != null){
+            sql=sql +" AND p.product_id=:productId";
+            map.put("productId",productQueryParams.getProductId() );
+        }
+
+
+        Integer total=namedParameterJdbcTemplate.queryForObject(sql,map,Integer.class);
+
+        return total;
+    }
+
+    @Override
+    public Integer sumSalesAmountByProductId(ProductQueryParams productQueryParams) {
+        String sql="SELECT SUM(oi.amount)  FROM product AS p INNER JOIN `order_item` AS oi ON p.product_id= oi.product_id WHERE 1=1 ";
+        Map <String ,Object > map=new HashMap <> ();
+
+        if(productQueryParams.getProductId() != null){
+            sql=sql +" AND p.product_id=:productId";
+            map.put("productId",productQueryParams.getProductId() );
+        }
+
+
+        Integer totalSalesAmount=namedParameterJdbcTemplate.queryForObject(sql,map,Integer.class);
+
+        return totalSalesAmount;
+
+    }
 
 
     @Override
@@ -61,6 +114,29 @@ public class OrderDaoImpl  implements OrderDao {
         List <Order> orderList=namedParameterJdbcTemplate.query(sql,map,new OrderRowMapper());
 
         return orderList;
+    }
+
+    @Override
+    public List<AllBuyerByProductId> getAllBuyerByProductId(ProductQueryParams productQueryParams) {
+        String sql="SELECT oi.order_item_id , oi.order_id , oi.quantity , oi.amount ,u.user_id ,u.email ,o.created_date FROM product AS p INNER JOIN ( `order_item` AS oi INNER JOIN ( `order` AS o INNER JOIN `user` AS u ON o.user_id =u.user_id ) ON oi.order_id=o.order_id )ON p.product_id= oi.product_id WHERE 1=1 ";
+        Map <String ,Object > map=new HashMap <> ();
+
+        if(productQueryParams.getProductId() != null){
+            sql=sql +" AND p.product_id=:productId";
+            map.put("productId",productQueryParams.getProductId() );
+        }
+
+        //排序 (條件直接寫死，由新到舊的訂單)
+        sql+=" ORDER BY created_date DESC ";
+
+        //分頁
+        sql =sql +" LIMIT :limit OFFSET :offset ";
+        map.put("limit",productQueryParams.getLimit());
+        map.put("offset",productQueryParams.getOffset());
+
+        List<AllBuyerByProductId> allBuyerByProductIdList=namedParameterJdbcTemplate.query(sql,map,new AllBuyerByProductIdRowMapper());
+
+        return allBuyerByProductIdList;
     }
 
     @Override

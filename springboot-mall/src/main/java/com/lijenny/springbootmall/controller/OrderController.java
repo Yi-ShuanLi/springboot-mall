@@ -2,9 +2,14 @@ package com.lijenny.springbootmall.controller;
 
 import com.lijenny.springbootmall.dto.CreateOrderRequest;
 import com.lijenny.springbootmall.dto.OrderQueryParams;
+import com.lijenny.springbootmall.dto.ProductQueryParams;
+import com.lijenny.springbootmall.model.AllBuyerByProductId;
 import com.lijenny.springbootmall.model.Order;
+import com.lijenny.springbootmall.model.OrderInfoByProductId;
 import com.lijenny.springbootmall.service.OrderService;
 import com.lijenny.springbootmall.util.Page;
+import com.lijenny.springbootmall.util.Page2;
+import com.lijenny.springbootmall.util.Page3;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -25,7 +30,7 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping("/users/{userId}/orders")
-    public ResponseEntity <Page<Order>> getOrders(
+    public ResponseEntity <Page3<Order>> getOrders(
             @PathVariable Integer userId,
             @RequestParam (defaultValue = "10") @Max(1000) @Min(0) Integer limit,
             @RequestParam (defaultValue ="0") @Min(0) Integer offset){
@@ -39,13 +44,40 @@ public class OrderController {
 
         //取得order總數
         Integer count=orderService.countOrders(orderQueryParams);
+        Integer totalShoppingAmount=orderService.getTotalShoppingAmount(orderQueryParams);
 
         //分頁
-        Page <Order> page=new Page <> ();
+        Page3 <Order> page=new Page3 <> ();
         page.setLimit(limit);
         page.setOffset(offset);
         page.setTotal(count);
+        page.setTotalShoppingAmount(totalShoppingAmount);
         page.setResults(orderList);
+
+        return ResponseEntity.status(HttpStatus.OK).body(page);
+    }
+
+    @GetMapping("/users/{productId}/ordersAndBuyers")
+    public ResponseEntity <Page2> getOrdersAndBuyerByProductId(
+            @PathVariable Integer productId,
+            @RequestParam (defaultValue = "10") @Max(1000) @Min(0) Integer limit,
+            @RequestParam (defaultValue ="0") @Min(0) Integer offset){
+        ProductQueryParams productQueryParams=new ProductQueryParams();
+        productQueryParams.setProductId(productId);
+        productQueryParams.setLimit(limit);
+        productQueryParams.setOffset(offset);
+
+        //
+        OrderInfoByProductId orderInfoByProductId =orderService.getOrdersInfoByProductId(productQueryParams);
+
+        Integer count=orderService.countOrdersByProductId(productQueryParams);
+
+        //分頁
+        Page2 page=new Page2  ();
+        page.setLimit(limit);
+        page.setOffset(offset);
+        page.setTotal(count);
+        page.setResults(orderInfoByProductId);
 
         return ResponseEntity.status(HttpStatus.OK).body(page);
     }

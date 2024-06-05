@@ -4,7 +4,7 @@ import com.lijenny.springbootmall.constant.ProductCategory;
 
 import java.util.Date;
 
-public class Product {
+public class ProductItem {
     private Integer productId;
     private String productName;
     private ProductCategory category;
@@ -14,7 +14,15 @@ public class Product {
     private String description;
     private Date createdDate;
     private Date lastModifiedDate;
+    private Integer salesNumber;
 
+    public Integer getSalesNumber() {
+        return salesNumber;
+    }
+
+    public void setSalesNumber(Integer salesNumber) {
+        this.salesNumber = salesNumber;
+    }
 
     public Integer getProductId() {
         return productId;

@@ -5,6 +5,7 @@ import com.lijenny.springbootmall.dao.ProductDao;
 import com.lijenny.springbootmall.dto.BuyItem;
 import com.lijenny.springbootmall.dto.ProductRequest;
 import com.lijenny.springbootmall.model.Product;
+import com.lijenny.springbootmall.model.ProductItem;
 import com.lijenny.springbootmall.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getProducts(BuyItem.ProductQueryParams productQueryParams) {
         return productDao.getProducts(productQueryParams);
+    }
+
+    @Override
+    public List<ProductItem> getProductsContainsSalesNumber(BuyItem.ProductQueryParams productQueryParams) {
+        return productDao.getProductsContainsSalesNumber(productQueryParams);
     }
 
     @Override

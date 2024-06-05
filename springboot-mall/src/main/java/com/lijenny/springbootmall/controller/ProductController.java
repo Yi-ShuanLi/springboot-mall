@@ -4,6 +4,7 @@ import com.lijenny.springbootmall.constant.ProductCategory;
 import com.lijenny.springbootmall.dto.BuyItem;
 import com.lijenny.springbootmall.dto.ProductRequest;
 import com.lijenny.springbootmall.model.Product;
+import com.lijenny.springbootmall.model.ProductItem;
 import com.lijenny.springbootmall.service.ProductService;
 import com.lijenny.springbootmall.util.Page;
 import jakarta.validation.Valid;
@@ -55,6 +56,42 @@ public class ProductController {
         page.setOffset(offset);
         page.setTotal(total);
         page.setResults(productList);
+
+        return ResponseEntity.status(HttpStatus.OK).body(page);
+
+    }
+
+    @GetMapping("/productsContainSalesNumber")
+    public ResponseEntity <Page<ProductItem>> getProductsContainSalesNumber(
+            //查詢條件 Filtering
+            @RequestParam(required=false) ProductCategory category,
+            @RequestParam(required=false) String search ,
+            //排序 Sorting
+            @RequestParam(defaultValue="created_date") String orderBy,
+            @RequestParam(defaultValue="desc") String sort,
+            //控制分頁 Pagination 有最大和最小值，需在class上面加上 @Validated
+            @RequestParam(defaultValue="5") @Max(1000) @Min(0) Integer limit,
+            @RequestParam(defaultValue="0") @Min(0) Integer offset){
+
+        BuyItem.ProductQueryParams productQueryParams=new BuyItem.ProductQueryParams();
+        productQueryParams.setCategory(category);
+        productQueryParams.setSearch(search);
+        productQueryParams.setOrderBy(orderBy);
+        productQueryParams.setSort(sort);
+        productQueryParams.setLimit(limit);
+        productQueryParams.setOffset(offset);
+
+        //取得 product list
+        List <ProductItem> ProductItemListList =productService.getProductsContainsSalesNumber(productQueryParams);
+        //取得 product 總數
+        Integer total=productService.countProduct(productQueryParams);
+
+        //分頁
+        Page<ProductItem> page=new Page<>();
+        page.setLimit(limit);
+        page.setOffset(offset);
+        page.setTotal(total);
+        page.setResults(ProductItemListList);
 
         return ResponseEntity.status(HttpStatus.OK).body(page);
 

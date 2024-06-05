@@ -3,8 +3,9 @@ package com.lijenny.springbootmall.model;
 import com.lijenny.springbootmall.constant.ProductCategory;
 
 import java.util.Date;
+import java.util.List;
 
-public class Product {
+public class OrderInfoByProductId {
     private Integer productId;
     private String productName;
     private ProductCategory category;
@@ -14,7 +15,16 @@ public class Product {
     private String description;
     private Date createdDate;
     private Date lastModifiedDate;
+    private Integer totalSalesAmount;
+    private List<AllBuyerByProductId> allBuyerByProductIdList;
 
+    public Integer getTotalSalesAmount() {
+        return totalSalesAmount;
+    }
+
+    public void setTotalSalesAmount(Integer totalSalesAmount) {
+        this.totalSalesAmount = totalSalesAmount;
+    }
 
     public Integer getProductId() {
         return productId;
@@ -86,5 +96,13 @@ public class Product {
 
     public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public List<AllBuyerByProductId> getAllBuyerByProductIdList() {
+        return allBuyerByProductIdList;
+    }
+
+    public void setAllBuyerByProductIdList(List<AllBuyerByProductId> allBuyerByProductIdList) {
+        this.allBuyerByProductIdList = allBuyerByProductIdList;
     }
 }
